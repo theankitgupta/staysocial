@@ -2,6 +2,8 @@ import {
   findAllListings,
   createNewListing,
   findListingById,
+  updateListingById,
+  deleteListingById,
 } from "../services/listing.service.js";
 
 /**
@@ -63,3 +65,57 @@ export const getListingById = async (req, res, next) => {
     next(error);
   }
 }
+
+/**
+ * Renders the edit form for a specific listing
+ * Route: GET /listings/:id/edit
+ */
+export const renderEditForm = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const listing = await findListingById(id);
+
+    res.render('listings/edit', {
+      listing,
+      title: `Edit ${listing.title} | StaySocial`
+    });
+  } catch (error) {
+    console.error('Error rendering edit form:', error);
+    next(error);
+  }
+}
+
+/**
+ * Handles form submission to update a listing
+ * Route: PUT /listings/:id
+ */
+export const updateListing = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body.listing;
+
+    const updatedListing = await updateListingById(id, updatedData);
+
+    // PRG pattern: redirect after successful update
+    res.redirect(`/listings/${updatedListing._id}`);
+  } catch (error) {
+    console.error('Error updating listing:', error);
+    next(error);
+  }
+}
+
+/**
+ * Handles deletion of a listing
+ * Route: DELETE /listings/:id
+ */
+export const deleteListing = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await deleteListingById(id);
+
+    res.redirect('/listings');
+  } catch (error) {
+    console.error('Error deleting listing:', error);
+    next(error);
+  }
+};

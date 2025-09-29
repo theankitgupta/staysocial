@@ -48,3 +48,50 @@ export async function findListingById(id) {
 
   return listing;
 }
+
+/**
+ * Update a listing by its ID
+ * @param {string} id - The MongoDB ObjectId of the listing
+ * @param {Object} listingData - The data to update
+ * @returns {Promise<Object>} - The updated listing document
+ * @throws {Error} - If the listing is not found or update fails
+ */
+export const updateListingById = async (id, listingData) => {
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(
+      id,
+      listingData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedListing) {
+      throw new Error("Listing not found");
+    }
+
+    return updatedListing;
+  } catch (error) {
+    console.error('Error updating listing:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a listing by its ID
+ * @param {string} id - The MongoDB ObjectId of the listing
+ * @returns {Promise<Object|null>} - The deleted listing document, or null if not found
+ * @throws {Error} - If deletion fails
+ */
+export const deleteListingById = async (id) => {
+  try {
+    const deletedListing = await Listing.findByIdAndDelete(id);
+
+    if (!deletedListing) {
+      throw new Error("Listing not found");
+    }
+
+    return deletedListing;
+  } catch (error) {
+    console.error('Error deleting listing:', error);
+    throw error;
+  }
+};
