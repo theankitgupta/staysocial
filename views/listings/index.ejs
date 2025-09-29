@@ -1,0 +1,21 @@
+<% layout('./layouts/boilerplate') %>
+
+<h1 class="mb-4">All Listings</h1>
+
+<div class="row">
+  <% if (listings.length === 0) { %>
+    <p>No listings found.</p>
+  <% } %>
+
+  <% for (let listing of listings) { %>
+    <div class="col-md-4 mb-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title"><%= listing.title %></h5>
+          <p class="card-text"><%= listing.description %></p>
+          <p class="card-text fw-bold">Price: $<%= listing.price %></p>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</div>
