@@ -13,3 +13,20 @@ export const findAllListings = async () => {
     throw new Error("Error fetching listings: " + error.message);
   }
 };
+
+/**
+ * Find a listing by its ID
+ * @param {string} id - The MongoDB ObjectId of the listing
+ * @returns {Promise<Object>} - The listing document
+ * @throws {Error} - If the listing is not found
+ */
+
+export async function findListingById(id) {
+  const listing = await Listing.findById(id);
+
+  if (!listing) {
+    throw new Error("Listing not found");
+  }
+
+  return listing;
+}

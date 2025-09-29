@@ -1,21 +1,33 @@
 <% layout('./layouts/boilerplate') %>
 
-<h1 class="mb-4">All Listings</h1>
+<h1 class="mb-4">
+  All Listings
+</h1>
 
 <div class="row">
   <% if (listings.length === 0) { %>
-    <p>No listings found.</p>
+    <p>
+      No listings found.
+    </p>
   <% } %>
 
   <% for (let listing of listings) { %>
     <div class="col-md-4 mb-3">
-      <div class="card h-100 shadow-sm">
+      <a href="/listings/<%= listing._id %>" style="color: inherit; text-decoration: none;">
         <div class="card-body">
-          <h5 class="card-title"><%= listing.title %></h5>
-          <p class="card-text"><%= listing.description %></p>
-          <p class="card-text fw-bold">Price: $<%= listing.price %></p>
+          <div class="card h-100 shadow-sm hover-shadow">
+            <h5 class="card-title">
+              <%= listing.title %>
+            </h5>
+            <p class="card-text">
+              <%= listing.description %>
+            </p>
+            <p class="card-text fw-bold">
+              ₹<%= listing.price.toLocaleString() %>
+            </p>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
   <% } %>
 </div>

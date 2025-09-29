@@ -1,0 +1,26 @@
+<% layout('./layouts/boilerplate') %>
+
+<section class="listing-show">
+  <div class="container">
+    <header class="listing-header">
+      <h1 class="listing-title">
+        <%= listing.title %>
+      </h1>
+      <p class="listing-price">
+        ₹<%= listing.price.toLocaleString() %>
+      </p>
+    </header>
+
+    <div class="listing-body">
+      <p class="listing-description">
+        <%= listing.description %>
+      </p>
+    </div>
+
+    <footer class="listing-footer">
+      <a href="/listings" class="btn btn-secondary">
+        ← Back to Listings
+      </a>
+    </footer>
+  </div>
+</section>
