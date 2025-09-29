@@ -1,0 +1,46 @@
+<% layout('./layouts/boilerplate') %>
+
+<h1>Create a New Listing</h1>
+
+<form action="/listings" method="POST">
+  <!-- Title Field -->
+  <div class="form-group">
+    <label for="title">Title:</label>
+    <input 
+      type="text" 
+      id="title" 
+      name="listing[title]" 
+      class="form-control" 
+      placeholder="Enter listing title" 
+      required
+    >
+  </div>
+
+  <!-- Description Field -->
+  <div class="form-group">
+    <label for="description">Description:</label>
+    <textarea 
+      id="description" 
+      name="listing[description]" 
+      class="form-control" 
+      placeholder="Enter description" 
+      rows="5"
+      required
+    ></textarea>
+  </div>
+
+  <!-- Price Field -->
+  <div class="form-group">
+    <label for="price">Price:</label>
+    <input 
+      type="number" 
+      id="price" 
+      name="listing[price]" 
+      class="form-control" 
+      placeholder="Enter price" 
+      required
+    >
+  </div>
+
+  <button type="submit" class="btn btn-primary mt-3">Create Listing</button>
+</form>

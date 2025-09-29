@@ -3,6 +3,7 @@ import Listing from "../models/listing.model.js";
 /**
  * Fetch all listings from the database
  * @returns {Promise<Array>} Array of listing documents
+ * @throws {Error} If there's an issue fetching the listings
  */
 
 export const findAllListings = async () => {
@@ -13,6 +14,23 @@ export const findAllListings = async () => {
     throw new Error("Error fetching listings: " + error.message);
   }
 };
+
+/**
+ * Creates a new listing in the database
+ * @param {Object} listingData - The data from the form (req.body.listing)
+ * @returns {Promise<Object>} - The saved listing object, including _id
+ * @throws {Error} - If there's an error during creation
+ */
+export const createNewListing = async(listingData) => {
+  try {
+    const listing = new Listing(listingData);
+    const savedListing = await listing.save();
+    return savedListing;
+  } catch (error) {
+    console.error('Error creating listing:', error);
+    throw error;
+  }
+}
 
 /**
  * Find a listing by its ID

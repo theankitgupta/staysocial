@@ -1,30 +1,27 @@
 <% layout('./layouts/boilerplate') %>
 
-<h1 class="mb-4">
-  All Listings
-</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>All Listings</h1>
+  <a href="/listings/new" class="btn btn-success">
+    Add New Listing
+  </a>
+</div>
 
 <div class="row">
   <% if (listings.length === 0) { %>
-    <p>
-      No listings found.
-    </p>
+    <div class="col-12">
+      <p class="text-muted">No listings found.</p>
+    </div>
   <% } %>
 
   <% for (let listing of listings) { %>
     <div class="col-md-4 mb-3">
-      <a href="/listings/<%= listing._id %>" style="color: inherit; text-decoration: none;">
-        <div class="card-body">
-          <div class="card h-100 shadow-sm hover-shadow">
-            <h5 class="card-title">
-              <%= listing.title %>
-            </h5>
-            <p class="card-text">
-              <%= listing.description %>
-            </p>
-            <p class="card-text fw-bold">
-              ₹<%= listing.price.toLocaleString() %>
-            </p>
+      <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark">
+        <div class="card h-100 shadow-sm hover-shadow">
+          <div class="card-body">
+            <h5 class="card-title"><%= listing.title %></h5>
+            <p class="card-text"><%= listing.description %></p>
+            <p class="card-text fw-bold">₹<%= listing.price.toLocaleString() %></p>
           </div>
         </div>
       </a>
