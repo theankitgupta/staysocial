@@ -4,258 +4,353 @@ import Listing from "../src/models/listing.model.js";
 
 dotenv.config();
 
+function getCoordinatesForCity(city) {
+  const cityCoordinates = {
+    "Delhi": [77.1025, 28.7041],
+    "Bangalore": [77.5946, 12.9716],
+    "Jaipur": [75.7873, 26.9124],
+    "Goa": [73.8278, 15.4909],
+    "Gurgaon": [77.0266, 28.4595],
+    "Pune": [73.8567, 18.5204],
+    "Manali": [77.1734, 32.2396],
+    "Kerala": [76.2711, 10.8505],
+    "Mumbai": [72.8777, 19.0760],
+    "Mussoorie": [78.0700, 30.4590],
+    "Hyderabad": [78.4867, 17.3850],
+    "Punjab": [75.3413, 31.1471],
+    "Ooty": [76.6936, 11.4102],
+    "Chennai": [80.2707, 13.0827],
+    "Leh": [77.5770, 34.1526],
+    "Noida": [77.3910, 28.5355],
+    "Jaisalmer": [70.9026, 26.9157],
+    "Rishikesh": [78.2676, 30.0869],
+    "Udaipur": [73.7125, 24.5854],
+    "Indore": [75.8577, 22.7196],
+    "Kolkata": [88.3639, 22.5726],
+    "Sikkim": [88.5122, 27.5330],
+    "Nagpur": [79.0882, 21.1458],
+    "Coorg": [75.7388, 12.4202],
+    "Surat": [72.8311, 21.1702],
+    "Himachal": [77.1734, 31.1048],
+    "Ahmedabad": [72.5714, 23.0225],
+    "Haryana": [76.0856, 29.0588],
+    "Chandigarh": [76.7794, 30.7333],
+    "Ranthambore": [76.3937, 26.0170],
+    "Pondicherry": [79.8083, 11.9416],
+    "Darjeeling": [88.2636, 27.0341],
+    "Bhubaneswar": [85.8245, 20.2961],
+    "Varanasi": [82.9739, 25.3176],
+    "Nainital": [79.4623, 29.3803],
+    "Lucknow": [80.9462, 26.8467],
+    "Bikaner": [73.3119, 28.0229],
+    "Shillong": [91.8933, 25.5788],
+    "Patna": [85.1376, 25.5941],
+    "Andaman": [92.7265, 11.6234],
+    "Spiti Valley": [78.4336, 32.2432],
+    "Bhopal": [77.4126, 23.2599],
+    "Mysore": [76.6394, 12.2958],
+    "Vizag": [83.2185, 17.6868],
+    "Rajkot": [70.8022, 22.3039],
+    "Uttarakhand": [78.9630, 30.0668],
+    "Siliguri": [88.4336, 26.7271]
+  };
+
+  return cityCoordinates[city] || [77.2090, 28.6139]; // Default to Delhi coordinates
+}
+
+// Helper function to generate sample images
+function generateSampleImages() {
+  const imageCount = 1 + Math.floor(Math.random() * 4); // Always 1-4 images
+  const images = [];
+  for (let i = 1; i <= imageCount; i++) {
+    images.push({
+      url: `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`,
+      filename: `listing-image-${Date.now()}-${i}`
+    });
+  }
+  return images;
+}
+
+// Helper function to generate availability dates
+function generateAvailability() {
+  const from = new Date();
+  const to = new Date();
+  to.setDate(to.getDate() + 30 + Math.floor(Math.random() * 60)); // 30-90 days from now
+  return [{ from, to }];
+}
+
+// Helper function to generate amenities based on type
+function generateAmenities(type) {
+  const baseAmenities = ["Wi-Fi", "Kitchen", "Air Conditioning"];
+  
+  if (type === "Entire Place") {
+    return [...baseAmenities, "Private Entrance", "Free Parking", "Washing Machine"];
+  } else if (type === "Private Room") {
+    return [...baseAmenities, "Shared Kitchen", "Laundry Access"];
+  } else if (type === "Hotel Room") {
+    return [...baseAmenities, "Daily Cleaning", "Room Service", "Swimming Pool"];
+  } else {
+    return [...baseAmenities, "Shared Bathroom", "Common Area"];
+  }
+}
+
+// Helper function to generate capacity based on type
+function generateCapacity(type) {
+  if (type === "Entire Place") {
+    return {
+      maxGuests: 2 + Math.floor(Math.random() * 6), // 2-8 guests
+      bedrooms: 1 + Math.floor(Math.random() * 3), // 1-4 bedrooms
+      beds: 1 + Math.floor(Math.random() * 4), // 1-5 beds
+      bathrooms: 1 + Math.floor(Math.random() * 2) // 1-3 bathrooms
+    };
+  } else if (type === "Private Room") {
+    return {
+      maxGuests: 1 + Math.floor(Math.random() * 2), // 1-3 guests
+      bedrooms: 1,
+      beds: 1,
+      bathrooms: 1
+    };
+  } else if (type === "Hotel Room") {
+    return {
+      maxGuests: 1 + Math.floor(Math.random() * 2), // 1-3 guests
+      bedrooms: 1,
+      beds: 1 + Math.floor(Math.random() * 2), // 1-3 beds
+      bathrooms: 1
+    };
+  } else {
+    return {
+      maxGuests: 1,
+      bedrooms: 0,
+      beds: 1,
+      bathrooms: 1
+    };
+  }
+}
+
 const sampleListings = [
   {
     title: "Cozy Studio in Delhi",
     description: "Compact studio apartment near Connaught Place, perfect for solo travelers.",
-    price: 1200,
+    price: {
+      base: 1200,
+      currency: "INR"
+    },
+    location: {
+      street: "12-B Connaught Place",
+      city: "Delhi",
+      state: "Delhi",
+      country: "India",
+      pincode: "110001",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Delhi")
+      }
+    },
+    type: "Entire Place",
+    status: "active"
   },
   {
     title: "Modern 2BHK in Bangalore",
     description: "Spacious flat with fast Wi-Fi and balcony views of the city.",
-    price: 2500,
+    price: {
+      base: 2500,
+      currency: "INR"
+    },
+    location: {
+      street: "45 Koramangala 5th Block",
+      city: "Bangalore",
+      state: "Karnataka",
+      country: "India",
+      pincode: "560034",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Bangalore")
+      }
+    },
+    type: "Entire Place",
+    status: "active"
   },
   {
     title: "Heritage Home in Jaipur",
     description: "Stay in a 200-year-old haveli with traditional interiors.",
-    price: 1800,
+    price: {
+      base: 1800,
+      currency: "INR"
+    },
+    location: {
+      street: "23 Hawa Mahal Road",
+      city: "Jaipur",
+      state: "Rajasthan",
+      country: "India",
+      pincode: "302002",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Jaipur")
+      }
+    },
+    type: "Entire Place",
+    status: "active"
   },
   {
     title: "Beachside Shack in Goa",
     description: "Rustic bamboo hut right on the sands of Anjuna Beach.",
-    price: 2200,
+    price: {
+      base: 2200,
+      currency: "INR"
+    },
+    location: {
+      street: "Anjuna Beach Road",
+      city: "Goa",
+      state: "Goa",
+      country: "India",
+      pincode: "403509",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Goa")
+      }
+    },
+    type: "Entire Place",
+    status: "active"
   },
   {
     title: "Luxury Villa in Gurgaon",
     description: "4BHK villa with a private pool and garden, ideal for families.",
-    price: 7500,
+    price: {
+      base: 7500,
+      currency: "INR"
+    },
+    location: {
+      street: "DLF Phase 5",
+      city: "Gurgaon",
+      state: "Haryana",
+      country: "India",
+      pincode: "122002",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Gurgaon")
+      }
+    },
+    type: "Entire Place",
+    status: "active"
   },
   {
     title: "Budget PG in Pune",
     description: "Affordable shared accommodation for students and professionals.",
-    price: 800,
+    price: {
+      base: 800,
+      currency: "INR"
+    },
+    location: {
+      street: "FC Road",
+      city: "Pune",
+      state: "Maharashtra",
+      country: "India",
+      pincode: "411004",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Pune")
+      }
+    },
+    type: "Shared Room",
+    status: "active"
   },
   {
     title: "Treehouse Retreat in Manali",
     description: "Wooden treehouse surrounded by pine forests and snowy peaks.",
-    price: 3000,
+    price: {
+      base: 3000,
+      currency: "INR"
+    },
+    location: {
+      street: "Old Manali Road",
+      city: "Manali",
+      state: "Himachal Pradesh",
+      country: "India",
+      pincode: "175131",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Manali")
+      }
+    },
+    type: "Entire Place",
+    status: "active"
   },
   {
     title: "Houseboat in Kerala",
     description: "Traditional houseboat stay in the backwaters of Alleppey.",
-    price: 5000,
+    price: {
+      base: 5000,
+      currency: "INR"
+    },
+    location: {
+      street: "Alleppey Backwaters",
+      city: "Kerala",
+      state: "Kerala",
+      country: "India",
+      pincode: "688013",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Kerala")
+      }
+    },
+    type: "Entire Place",
+    status: "active"
   },
   {
     title: "Compact 1BHK in Mumbai",
     description: "Fully furnished apartment close to Bandra station.",
-    price: 2800,
+    price: {
+      base: 2800,
+      currency: "INR"
+    },
+    location: {
+      street: "Bandra West",
+      city: "Mumbai",
+      state: "Maharashtra",
+      country: "India",
+      pincode: "400050",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Mumbai")
+      }
+    },
+    type: "Entire Place",
+    status: "active"
   },
   {
     title: "Mountain Cabin in Mussoorie",
     description: "Cozy wooden cabin with a fireplace and valley views.",
-    price: 3500,
-  },
-  {
-    title: "Designer Loft in Hyderabad",
-    description: "Open-plan loft with modern decor and smart home features.",
-    price: 4200,
-  },
-  {
-    title: "Farmstay in Punjab",
-    description: "Rural experience with fields, tractors, and organic meals.",
-    price: 1500,
-  },
-  {
-    title: "Colonial Bungalow in Ooty",
-    description: "Tea estate bungalow with vintage furniture and gardens.",
-    price: 4000,
-  },
-  {
-    title: "Capsule Pod in Chennai",
-    description: "Futuristic pod-style accommodation near the airport.",
-    price: 900,
-  },
-  {
-    title: "Himalayan Homestay in Leh",
-    description: "Experience Ladakhi culture with a warm family home.",
-    price: 1600,
-  },
-  {
-    title: "Studio Apartment in Noida",
-    description: "Modern studio with kitchenette and metro access.",
-    price: 2100,
-  },
-  {
-    title: "Desert Camp in Jaisalmer",
-    description: "Luxury tent under the stars with camel safari included.",
-    price: 3700,
-  },
-  {
-    title: "Riverside Cottage in Rishikesh",
-    description: "Private riverside stay with yoga and rafting options.",
-    price: 2800,
-  },
-  {
-    title: "Lake View Apartment in Udaipur",
-    description: "Balcony views of Lake Pichola and City Palace.",
-    price: 3300,
-  },
-  {
-    title: "Smart 1RK in Indore",
-    description: "Minimalist one-room kitchen for solo professionals.",
-    price: 1200,
-  },
-  {
-    title: "Luxury Penthouse in Kolkata",
-    description: "Top-floor penthouse with a terrace garden and city views.",
-    price: 8500,
-  },
-  {
-    title: "Eco Hut in Sikkim",
-    description: "Sustainable bamboo hut with organic meals included.",
-    price: 1900,
-  },
-  {
-    title: "Shared Dorm in Delhi",
-    description: "Hostel-style dormitory for backpackers and budget travelers.",
-    price: 500,
-  },
-  {
-    title: "Suburban Home in Nagpur",
-    description: "Family-friendly home in a quiet residential colony.",
-    price: 2000,
-  },
-  {
-    title: "Luxury Hotel Room in Mumbai",
-    description: "5-star hotel stay with breakfast and ocean views.",
-    price: 9500,
-  },
-  {
-    title: "Tiny House in Coorg",
-    description: "Charming tiny house surrounded by coffee plantations.",
-    price: 2600,
-  },
-  {
-    title: "Studio Flat in Surat",
-    description: "Affordable and modern studio with Wi-Fi and AC.",
-    price: 1400,
-  },
-  {
-    title: "Rustic Homestay in Himachal",
-    description: "Family-run cottage with homemade food and trekking.",
-    price: 1700,
-  },
-  {
-    title: "Artistic Loft in Ahmedabad",
-    description: "Loft filled with quirky artwork and an open kitchen.",
-    price: 2800,
-  },
-  {
-    title: "Countryside Farm in Haryana",
-    description: "Farmhouse stay with tractor rides and dairy experience.",
-    price: 2200,
-  },
-  {
-    title: "Studio in Chandigarh",
-    description: "Clean, compact apartment in a planned neighborhood.",
-    price: 2000,
-  },
-  {
-    title: "Luxury Tent in Ranthambore",
-    description: "Safari tent with AC, perfect for tiger reserve visits.",
-    price: 4500,
-  },
-  {
-    title: "Seaside Villa in Pondicherry",
-    description: "French-inspired villa right on the beach.",
-    price: 6000,
-  },
-  {
-    title: "Hilltop Lodge in Darjeeling",
-    description: "Stay with tea garden views and vintage charm.",
-    price: 3700,
-  },
-  {
-    title: "Studio in Bhubaneswar",
-    description: "Modern studio with all basic amenities.",
-    price: 1600,
-  },
-  {
-    title: "Traditional Homestay in Varanasi",
-    description: "Live with a local family near the ghats.",
-    price: 1500,
-  },
-  {
-    title: "Lakefront Villa in Nainital",
-    description: "Private villa with lake views and bonfire nights.",
-    price: 7000,
-  },
-  {
-    title: "Studio Flat in Lucknow",
-    description: "Compact and cozy flat for business travelers.",
-    price: 1700,
-  },
-  {
-    title: "Heritage Haveli in Bikaner",
-    description: "Royal haveli stay with frescoes and courtyards.",
-    price: 3800,
-  },
-  {
-    title: "Guesthouse in Shillong",
-    description: "Charming guesthouse with music and local cuisine.",
-    price: 2400,
-  },
-  {
-    title: "Studio in Patna",
-    description: "Comfortable stay with AC and Wi-Fi for professionals.",
-    price: 1500,
-  },
-  {
-    title: "Eco Resort in Andaman",
-    description: "Beachfront eco-cottages built from local materials.",
-    price: 5500,
-  },
-  {
-    title: "Tent Stay in Spiti Valley",
-    description: "Adventure tenting experience with bonfires.",
-    price: 2300,
-  },
-  {
-    title: "Downtown Apartment in Bhopal",
-    description: "2BHK apartment close to markets and cafes.",
-    price: 2500,
-  },
-  {
-    title: "Cultural Homestay in Mysore",
-    description: "Live with locals, enjoy yoga and traditional meals.",
-    price: 1900,
-  },
-  {
-    title: "Minimalist Loft in Vizag",
-    description: "Modern minimalist loft with ocean view balcony.",
-    price: 3100,
-  },
-  {
-    title: "Studio Flat in Rajkot",
-    description: "Affordable flat in the heart of the textile city.",
-    price: 1300,
-  },
-  {
-    title: "Luxury Stay in Chandigarh",
-    description: "Premium service apartment with rooftop dining.",
-    price: 4800,
-  },
-  {
-    title: "Adventure Lodge in Uttarakhand",
-    description: "Perfect for trekking and river rafting enthusiasts.",
-    price: 2700,
-  },
-  {
-    title: "Guesthouse in Siliguri",
-    description: "Transit-friendly guesthouse with clean rooms.",
-    price: 1200,
-  },
+    price: {
+      base: 3500,
+      currency: "INR"
+    },
+    location: {
+      street: "Camel's Back Road",
+      city: "Mussoorie",
+      state: "Uttarakhand",
+      country: "India",
+      pincode: "248179",
+      geometry: {
+        type: "Point",
+        coordinates: getCoordinatesForCity("Mussoorie")
+      }
+    },
+    type: "Entire Place",
+    status: "active"
+  }
 ];
+
+// Enhance sample listings with generated data
+const enhancedListings = sampleListings.map(listing => {
+  const capacity = generateCapacity(listing.type);
+  return {
+    ...listing,
+    ...capacity,
+    images: generateSampleImages(), // 1-4 images
+    amenities: generateAmenities(listing.type),
+    availability: generateAvailability()
+  };
+});
 
 async function main() {
   try {
@@ -265,12 +360,30 @@ async function main() {
     await Listing.deleteMany({});
     console.log("Old listings cleared.");
 
-    await Listing.insertMany(sampleListings);
+    await Listing.insertMany(enhancedListings);
     console.log("Database seeded successfully with sample listings!");
+
+  // Display some stats
+    const stats = await Listing.aggregate([
+      {
+        $group: {
+          _id: "$type",
+          count: { $sum: 1 },
+          avgPrice: { $avg: "$price.base" }
+        }
+      }
+    ]);
+    
+    console.log("\nListing Statistics:");
+    stats.forEach(stat => {
+      console.log(`${stat._id}: ${stat.count} listings, Avg Price: ₹${stat.avgPrice.toFixed(2)}`);
+    });
+    
   } catch (err) {
     console.error("Error seeding database:", err);
   } finally {
-    mongoose.connection.close();
+    await mongoose.connection.close();
+    console.log("Database connection closed.");
   }
 }
 

@@ -7,16 +7,23 @@ import {
   renderEditForm,
   updateListing,
   deleteListing,
+  searchListings
 } from "../controllers/listing.controller.js";
 import { 
   validate, 
-  listingSchema 
+  validateQuery, 
+  listingSchema, 
+  listingUpdateSchema, 
+  listingSearchSchema 
 } from '../utils/validation.js';
 
 const router = express.Router();
 
-// GET /listings → fetch all listings
-router.get("/", getAllListings);
+// GET /listings → fetch all listings (with optional search/filter)
+router.get("/", validateQuery(listingSearchSchema), getAllListings);
+
+// GET /listings/search → search listings with filters
+router.get("/search", validateQuery(listingSearchSchema), searchListings);
 
 // GET /listings/new → render form to create a new listing
 router.get('/new', renderNewForm);
@@ -31,7 +38,7 @@ router.get("/:id", getListingById);
 router.get("/:id/edit", renderEditForm);
 
 // PUT /listings/:id → update a listing
-router.put("/:id", validate(listingSchema), updateListing);
+router.put("/:id", validate(listingUpdateSchema), updateListing);
 
 // DELETE /listings/:id → delete a listing
 router.delete("/:id", deleteListing);

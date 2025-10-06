@@ -1,46 +1,443 @@
 <% layout('./layouts/boilerplate') %>
 
-<h1>Create a New Listing</h1>
+<div class="container">
+  <h1 class="mb-4">Create a New Listing</h1>
 
-<form action="/listings" method="POST">
-  <!-- Title Field -->
-  <div class="form-group">
-    <label for="title">Title:</label>
-    <input 
-      type="text" 
-      id="title" 
-      name="listing[title]" 
-      class="form-control" 
-      placeholder="Enter listing title" 
-      required
-    >
-  </div>
+  <form action="/listings" method="POST" class="row g-3">
+    
+    <!-- Core Information -->
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Basic Information</h5>
+        </div>
+        <div class="card-body">
+          <!-- Title Field -->
+          <div class="mb-3">
+            <label for="title" class="form-label">Title:</label>
+            <input 
+              type="text" 
+              id="title" 
+              name="listing[title]" 
+              class="form-control" 
+              placeholder="Enter listing title" 
+              required
+            >
+          </div>
 
-  <!-- Description Field -->
-  <div class="form-group">
-    <label for="description">Description:</label>
-    <textarea 
-      id="description" 
-      name="listing[description]" 
-      class="form-control" 
-      placeholder="Enter description" 
-      rows="5"
-      required
-    ></textarea>
-  </div>
+          <!-- Description Field -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <textarea 
+              id="description" 
+              name="listing[description]" 
+              class="form-control" 
+              placeholder="Enter description" 
+              rows="5"
+              required
+            ></textarea>
+          </div>
+        </div>
+      </div>
 
-  <!-- Price Field -->
-  <div class="form-group">
-    <label for="price">Price:</label>
-    <input 
-      type="number" 
-      id="price" 
-      name="listing[price]" 
-      class="form-control" 
-      placeholder="Enter price" 
-      required
-    >
-  </div>
+      <!-- Price Information -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Pricing</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="priceBase" class="form-label">Base Price (per night):</label>
+              <input 
+                type="number" 
+                id="priceBase" 
+                name="listing[price][base]" 
+                class="form-control" 
+                placeholder="Enter base price" 
+                min="0"
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="priceCurrency" class="form-label">Currency:</label>
+              <select 
+                id="priceCurrency" 
+                name="listing[price][currency]" 
+                class="form-select" 
+                required
+              >
+                <option value="INR" selected>INR (₹)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <button type="submit" class="btn btn-primary mt-3">Create Listing</button>
-</form>
+      <!-- Location Information -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Location</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="street" class="form-label">Street:</label>
+              <input 
+                type="text" 
+                id="street" 
+                name="listing[location][street]" 
+                class="form-control" 
+                placeholder="Enter street address" 
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="city" class="form-label">City:</label>
+              <input 
+                type="text" 
+                id="city" 
+                name="listing[location][city]" 
+                class="form-control" 
+                placeholder="Enter city" 
+                required
+              >
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="state" class="form-label">State:</label>
+              <input 
+                type="text" 
+                id="state" 
+                name="listing[location][state]" 
+                class="form-control" 
+                placeholder="Enter state" 
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="pincode" class="form-label">Pincode:</label>
+              <input 
+                type="text" 
+                id="pincode" 
+                name="listing[location][pincode]" 
+                class="form-control" 
+                placeholder="Enter pincode" 
+                required
+              >
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="country" class="form-label">Country:</label>
+              <input 
+                type="text" 
+                id="country" 
+                name="listing[location][country]" 
+                class="form-control" 
+                placeholder="Enter country" 
+                value="India"
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="longitude" class="form-label">Longitude:</label>
+              <input 
+                type="number" 
+                id="longitude" 
+                name="listing[location][geometry][coordinates][0]" 
+                class="form-control" 
+                placeholder="Enter longitude" 
+                step="any"
+                required
+              >
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="latitude" class="form-label">Latitude:</label>
+              <input 
+                type="number" 
+                id="latitude" 
+                name="listing[location][geometry][coordinates][1]" 
+                class="form-control" 
+                placeholder="Enter latitude" 
+                step="any"
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <!-- Hidden field for geometry type -->
+              <input 
+                type="hidden" 
+                name="listing[location][geometry][type]" 
+                value="Point"
+              >
+              <div class="mt-4">
+                <small class="form-text text-muted">
+                  💡 Tip: Use Google Maps to find coordinates
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Images Section -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Images</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-text mb-2">Add image URLs (1-5 images required):</div>
+          <div id="imageFields">
+            <div class="input-group mb-2">
+              <input 
+                type="url" 
+                name="listing[images][0][url]" 
+                class="form-control" 
+                placeholder="Enter image URL"
+                required
+              >
+              <input 
+                type="text" 
+                name="listing[images][0][filename]" 
+                class="form-control" 
+                placeholder="Filename (optional)"
+              >
+            </div>
+          </div>
+          <button type="button" id="addImage" class="btn btn-outline-secondary btn-sm">
+            + Add Another Image
+          </button>
+          <small class="form-text text-muted">
+            You can add up to 5 images. First image is required.
+          </small>
+        </div>
+      </div>
+
+      <!-- Availability Section -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Availability</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="availabilityFrom" class="form-label">Available From:</label>
+              <input 
+                type="date" 
+                id="availabilityFrom" 
+                name="listing[availability][0][from]" 
+                class="form-control" 
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="availabilityTo" class="form-label">Available To:</label>
+              <input 
+                type="date" 
+                id="availabilityTo" 
+                name="listing[availability][0][to]" 
+                class="form-control" 
+                required
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+      <!-- Property Type -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Property Type</h5>
+        </div>
+        <div class="card-body">
+          <select 
+            id="type" 
+            name="listing[type]" 
+            class="form-select" 
+            required
+          >
+            <option value="">Select type...</option>
+            <option value="Entire Place">Entire Place</option>
+            <option value="Private Room">Private Room</option>
+            <option value="Hotel Room">Hotel Room</option>
+            <option value="Shared Room">Shared Room</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Capacity -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Capacity</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-2">
+            <label for="maxGuests" class="form-label">Max Guests:</label>
+            <input 
+              type="number" 
+              id="maxGuests" 
+              name="listing[maxGuests]" 
+              class="form-control" 
+              value="1"
+              min="1"
+              required
+            >
+          </div>
+          <div class="mb-2">
+            <label for="bedrooms" class="form-label">Bedrooms:</label>
+            <input 
+              type="number" 
+              id="bedrooms" 
+              name="listing[bedrooms]" 
+              class="form-control" 
+              value="1"
+              min="0"
+              required
+            >
+          </div>
+          <div class="mb-2">
+            <label for="beds" class="form-label">Beds:</label>
+            <input 
+              type="number" 
+              id="beds" 
+              name="listing[beds]" 
+              class="form-control" 
+              value="1"
+              min="1"
+              required
+            >
+          </div>
+          <div class="mb-2">
+            <label for="bathrooms" class="form-label">Bathrooms:</label>
+            <input 
+              type="number" 
+              id="bathrooms" 
+              name="listing[bathrooms]" 
+              class="form-control" 
+              value="1"
+              min="0"
+              required
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Status</h5>
+        </div>
+        <div class="card-body">
+          <select 
+            id="status" 
+            name="listing[status]" 
+            class="form-select" 
+            required
+          >
+            <option value="active" selected>Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="pending">Pending</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Amenities -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Amenities</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-text mb-2">Select available amenities:</div>
+          <% const allAmenities = ["Wi-Fi", "Kitchen", "Air Conditioning", "Private Entrance", "Free Parking", "Washing Machine", "Shared Kitchen", "Laundry Access", "Daily Cleaning", "Room Service", "Swimming Pool", "Shared Bathroom", "Common Area", "TV", "Heating", "Workspace"]; %>
+          <% allAmenities.forEach(amenity => { %>
+            <div class="form-check">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                name="listing[amenities]" 
+                value="<%= amenity %>" 
+                id="amenity-<%= amenity.replace(/\s+/g, '-') %>"
+              >
+              <label class="form-check-label" for="amenity-<%= amenity.replace(/\s+/g, '-') %>">
+                <%= amenity %>
+              </label>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="col-12 mt-4">
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Create Listing</button>
+        <a href="/listings" class="btn btn-secondary">Cancel</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Dynamic image fields
+  let imageCount = 1;
+  document.getElementById('addImage').addEventListener('click', function() {
+    if (imageCount < 4) { // Maximum 5 images total (0-4)
+      const imageFields = document.getElementById('imageFields');
+      const newField = document.createElement('div');
+      newField.className = 'input-group mb-2';
+      newField.innerHTML = `
+        <input 
+          type="url" 
+          name="listing[images][${imageCount}][url]" 
+          class="form-control" 
+          placeholder="Enter image URL"
+        >
+        <input 
+          type="text" 
+          name="listing[images][${imageCount}][filename]" 
+          class="form-control" 
+          placeholder="Filename (optional)"
+        >
+        <button type="button" class="btn btn-outline-danger remove-image">×</button>
+      `;
+      imageFields.appendChild(newField);
+      imageCount++;
+      
+      // Update add button state
+      if (imageCount >= 4) {
+        this.disabled = true;
+        this.textContent = 'Maximum 5 images reached';
+      }
+    }
+  });
+
+  // Remove image field
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-image')) {
+      e.target.parentElement.remove();
+      imageCount--;
+      const addButton = document.getElementById('addImage');
+      addButton.disabled = false;
+      addButton.textContent = '+ Add Another Image';
+    }
+  });
+
+  // Set default dates for availability
+  const today = new Date().toISOString().split('T')[0];
+  const nextMonth = new Date();
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  const nextMonthStr = nextMonth.toISOString().split('T')[0];
+  
+  document.getElementById('availabilityFrom').value = today;
+  document.getElementById('availabilityTo').value = nextMonthStr;
+</script>

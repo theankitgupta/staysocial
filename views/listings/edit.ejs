@@ -1,48 +1,613 @@
 <% layout('./layouts/boilerplate') %>
 
-<h1>Edit Listing</h1>
+<div class="container">
+  <h1 class="mb-4">Edit Listing</h1>
 
-<form action="/listings/<%= listing._id %>?_method=PUT" method="POST">
-  <!-- Title Field -->
-  <div class="form-group">
-    <label for="title">Title:</label>
-    <input 
-      type="text" 
-      id="title" 
-      name="listing[title]" 
-      class="form-control" 
-      placeholder="Enter listing title" 
-      value="<%= listing.title %>" 
-      required
-    >
-  </div>
+  <form action="/listings/<%= listing._id %>?_method=PUT" method="POST" class="row g-3">
+    
+    <!-- Core Information -->
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Basic Information</h5>
+        </div>
+        <div class="card-body">
+          <!-- Title Field -->
+          <div class="mb-3">
+            <label for="title" class="form-label">Title:</label>
+            <input 
+              type="text" 
+              id="title" 
+              name="listing[title]" 
+              class="form-control" 
+              placeholder="Enter listing title" 
+              value="<%= listing.title %>" 
+              required
+            >
+          </div>
 
-  <!-- Description Field -->
-  <div class="form-group">
-    <label for="description">Description:</label>
-    <textarea 
-      id="description" 
-      name="listing[description]" 
-      class="form-control" 
-      placeholder="Enter description" 
-      rows="5"
-      required
-    ><%= listing.description %></textarea>
-  </div>
+          <!-- Description Field -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <textarea 
+              id="description" 
+              name="listing[description]" 
+              class="form-control" 
+              placeholder="Enter description" 
+              rows="5"
+              required
+            ><%= listing.description %></textarea>
+          </div>
+        </div>
+      </div>
 
-  <!-- Price Field -->
-  <div class="form-group">
-    <label for="price">Price:</label>
-    <input 
-      type="number" 
-      id="price" 
-      name="listing[price]" 
-      class="form-control" 
-      placeholder="Enter price" 
-      value="<%= listing.price %>" 
-      required
-    >
-  </div>
+      <!-- Price Information -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Pricing</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="priceBase" class="form-label">Base Price (per night):</label>
+              <input 
+                type="number" 
+                id="priceBase" 
+                name="listing[price][base]" 
+                class="form-control" 
+                placeholder="Enter base price" 
+                value="<%= listing.price.base %>" 
+                min="0"
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="priceCurrency" class="form-label">Currency:</label>
+              <select 
+                id="priceCurrency" 
+                name="listing[price][currency]" 
+                class="form-select" 
+                required
+              >
+                <option value="INR" <%= listing.price.currency === 'INR' ? 'selected' : '' %>>INR (₹)</option>
+                <option value="USD" <%= listing.price.currency === 'USD' ? 'selected' : '' %>>USD ($)</option>
+                <option value="EUR" <%= listing.price.currency === 'EUR' ? 'selected' : '' %>>EUR (€)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <button type="submit" class="btn btn-primary mt-3">Update Listing</button>
-</form>
+      <!-- Location Information -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Location</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="street" class="form-label">Street:</label>
+              <input 
+                type="text" 
+                id="street" 
+                name="listing[location][street]" 
+                class="form-control" 
+                placeholder="Enter street address" 
+                value="<%= listing.location.street %>" 
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="city" class="form-label">City:</label>
+              <input 
+                type="text" 
+                id="city" 
+                name="listing[location][city]" 
+                class="form-control" 
+                placeholder="Enter city" 
+                value="<%= listing.location.city %>" 
+                required
+              >
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="state" class="form-label">State:</label>
+              <input 
+                type="text" 
+                id="state" 
+                name="listing[location][state]" 
+                class="form-control" 
+                placeholder="Enter state" 
+                value="<%= listing.location.state %>" 
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="pincode" class="form-label">Pincode:</label>
+              <input 
+                type="text" 
+                id="pincode" 
+                name="listing[location][pincode]" 
+                class="form-control" 
+                placeholder="Enter pincode" 
+                value="<%= listing.location.pincode %>" 
+                required
+              >
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="country" class="form-label">Country:</label>
+              <input 
+                type="text" 
+                id="country" 
+                name="listing[location][country]" 
+                class="form-control" 
+                placeholder="Enter country" 
+                value="<%= listing.location.country %>" 
+                required
+              >
+            </div>
+            <div class="col-md-3">
+              <label for="longitude" class="form-label">Longitude:</label>
+              <input 
+                type="number" 
+                id="longitude" 
+                name="listing[location][geometry][coordinates][0]" 
+                class="form-control" 
+                step="any"
+                value="<%= listing.location.geometry.coordinates[0] %>" 
+                required
+              >
+            </div>
+            <div class="col-md-3">
+              <label for="latitude" class="form-label">Latitude:</label>
+              <input 
+                type="number" 
+                id="latitude" 
+                name="listing[location][geometry][coordinates][1]" 
+                class="form-control" 
+                step="any"
+                value="<%= listing.location.geometry.coordinates[1] %>" 
+                required
+              >
+            </div>
+          </div>
+          <!-- Hidden field for geometry type -->
+          <input type="hidden" name="listing[location][geometry][type]" value="Point">
+        </div>
+      </div>
+
+      <!-- Images Section -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Images</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-text mb-3">Current Images (1-5 images required):</div>
+          
+          <!-- Current Images Display -->
+          <% if (listing.images && listing.images.length > 0) { %>
+            <div class="row mb-3">
+              <% listing.images.forEach((image, index) => { %>
+                <div class="col-md-4 mb-3">
+                  <div class="card">
+                    <img src="<%= image.url %>" class="card-img-top" alt="Current image <%= index + 1 %>" style="height: 150px; object-fit: cover;">
+                    <div class="card-body">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="deleteImages" value="<%= image._id || index %>" id="deleteImage<%= index %>">
+                        <label class="form-check-label text-danger small" for="deleteImage<%= index %>">
+                          Delete this image
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+
+          <!-- Image URL Inputs -->
+          <div id="imageFields">
+            <% if (listing.images && listing.images.length > 0) { %>
+              <% listing.images.forEach((image, index) => { %>
+                <div class="input-group mb-2">
+                  <span class="input-group-text">Image <%= index + 1 %></span>
+                  <input 
+                    type="url" 
+                    name="listing[images][<%= index %>][url]" 
+                    class="form-control" 
+                    placeholder="Image URL"
+                    value="<%= image.url %>"
+                    required
+                  >
+                  <input 
+                    type="text" 
+                    name="listing[images][<%= index %>][filename]" 
+                    class="form-control" 
+                    placeholder="Filename (optional)"
+                    value="<%= image.filename || '' %>"
+                  >
+                  <input 
+                    type="hidden" 
+                    name="listing[images][<%= index %>][_id]" 
+                    value="<%= image._id || '' %>"
+                  >
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="input-group mb-2">
+                <input 
+                  type="url" 
+                  name="listing[images][0][url]" 
+                  class="form-control" 
+                  placeholder="Enter image URL"
+                  required
+                >
+                <input 
+                  type="text" 
+                  name="listing[images][0][filename]" 
+                  class="form-control" 
+                  placeholder="Filename (optional)"
+                >
+              </div>
+            <% } %>
+          </div>
+
+          <button type="button" id="addImage" class="btn btn-outline-secondary btn-sm mt-2">
+            <i class="bi bi-plus-circle"></i> Add Another Image
+          </button>
+          <small class="form-text text-muted d-block mt-1">
+            You can have 1-5 images. First image is required.
+          </small>
+        </div>
+      </div>
+
+      <!-- Availability Section -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Availability</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-text mb-3">Set available date ranges:</div>
+          <div id="availabilityFields">
+            <% if (listing.availability && listing.availability.length > 0) { %>
+              <% listing.availability.forEach((range, index) => { %>
+                <div class="row mb-2 availability-range">
+                  <div class="col-md-5">
+                    <label class="form-label">From:</label>
+                    <input 
+                      type="date" 
+                      name="listing[availability][<%= index %>][from]" 
+                      class="form-control" 
+                      value="<%= new Date(range.from).toISOString().split('T')[0] %>"
+                      required
+                    >
+                  </div>
+                  <div class="col-md-5">
+                    <label class="form-label">To:</label>
+                    <input 
+                      type="date" 
+                      name="listing[availability][<%= index %>][to]" 
+                      class="form-control" 
+                      value="<%= new Date(range.to).toISOString().split('T')[0] %>"
+                      required
+                    >
+                  </div>
+                  <div class="col-md-2 d-flex align-items-end">
+                    <% if (index > 0) { %>
+                      <button type="button" class="btn btn-outline-danger btn-sm remove-availability">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    <% } %>
+                  </div>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="row mb-2 availability-range">
+                <div class="col-md-5">
+                  <label class="form-label">From:</label>
+                  <input 
+                    type="date" 
+                    name="listing[availability][0][from]" 
+                    class="form-control" 
+                    required
+                  >
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label">To:</label>
+                  <input 
+                    type="date" 
+                    name="listing[availability][0][to]" 
+                    class="form-control" 
+                    required
+                  >
+                </div>
+              </div>
+            <% } %>
+          </div>
+          <button type="button" id="addAvailability" class="btn btn-outline-secondary btn-sm mt-2">
+            <i class="bi bi-plus-circle"></i> Add Another Date Range
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+      <!-- Property Type -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Property Type</h5>
+        </div>
+        <div class="card-body">
+          <select 
+            id="type" 
+            name="listing[type]" 
+            class="form-select" 
+            required
+          >
+            <option value="Entire Place" <%= listing.type === 'Entire Place' ? 'selected' : '' %>>Entire Place</option>
+            <option value="Private Room" <%= listing.type === 'Private Room' ? 'selected' : '' %>>Private Room</option>
+            <option value="Hotel Room" <%= listing.type === 'Hotel Room' ? 'selected' : '' %>>Hotel Room</option>
+            <option value="Shared Room" <%= listing.type === 'Shared Room' ? 'selected' : '' %>>Shared Room</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Capacity -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Capacity</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-2">
+            <label for="maxGuests" class="form-label">Max Guests:</label>
+            <input 
+              type="number" 
+              id="maxGuests" 
+              name="listing[maxGuests]" 
+              class="form-control" 
+              value="<%= listing.maxGuests %>" 
+              min="1"
+              required
+            >
+          </div>
+          <div class="mb-2">
+            <label for="bedrooms" class="form-label">Bedrooms:</label>
+            <input 
+              type="number" 
+              id="bedrooms" 
+              name="listing[bedrooms]" 
+              class="form-control" 
+              value="<%= listing.bedrooms %>" 
+              min="0"
+              required
+            >
+          </div>
+          <div class="mb-2">
+            <label for="beds" class="form-label">Beds:</label>
+            <input 
+              type="number" 
+              id="beds" 
+              name="listing[beds]" 
+              class="form-control" 
+              value="<%= listing.beds %>" 
+              min="1"
+              required
+            >
+          </div>
+          <div class="mb-2">
+            <label for="bathrooms" class="form-label">Bathrooms:</label>
+            <input 
+              type="number" 
+              id="bathrooms" 
+              name="listing[bathrooms]" 
+              class="form-control" 
+              value="<%= listing.bathrooms %>" 
+              min="0"
+              required
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Status</h5>
+        </div>
+        <div class="card-body">
+          <select 
+            id="status" 
+            name="listing[status]" 
+            class="form-select" 
+            required
+          >
+            <option value="active" <%= listing.status === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="inactive" <%= listing.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+            <option value="pending" <%= listing.status === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="blocked" <%= listing.status === 'blocked' ? 'selected' : '' %>>Blocked</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Amenities -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Amenities</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-text mb-2">Select available amenities:</div>
+          <% const allAmenities = ["Wi-Fi", "Kitchen", "Air Conditioning", "Private Entrance", "Free Parking", "Washing Machine", "Shared Kitchen", "Laundry Access", "Daily Cleaning", "Room Service", "Swimming Pool", "Shared Bathroom", "Common Area", "TV", "Heating", "Workspace"]; %>
+          <% allAmenities.forEach(amenity => { %>
+            <div class="form-check">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                name="listing[amenities]" 
+                value="<%= amenity %>" 
+                id="amenity-<%= amenity.replace(/\s+/g, '-') %>"
+                <%= listing.amenities.includes(amenity) ? 'checked' : '' %>
+              >
+              <label class="form-check-label" for="amenity-<%= amenity.replace(/\s+/g, '-') %>">
+                <%= amenity %>
+              </label>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="col-12 mt-4">
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check-circle"></i> Update Listing
+        </button>
+        <a href="/listings/<%= listing._id %>" class="btn btn-secondary">
+          <i class="bi bi-x-circle"></i> Cancel
+        </a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Image Management
+    let imageCount = JSON.parse('<%- JSON.stringify(listing.images ? listing.images.length : 1) %>');
+    const addImageBtn = document.getElementById('addImage');
+    const imageFields = document.getElementById('imageFields');
+
+    addImageBtn.addEventListener('click', function() {
+      if (imageCount < 5) {
+        const newField = document.createElement('div');
+        newField.className = 'input-group mb-2';
+        newField.innerHTML = `
+          <span class="input-group-text">Image ${imageCount + 1}</span>
+          <input 
+            type="url" 
+            name="listing[images][${imageCount}][url]" 
+            class="form-control" 
+            placeholder="Image URL"
+            required
+          >
+          <input 
+            type="text" 
+            name="listing[images][${imageCount}][filename]" 
+            class="form-control" 
+            placeholder="Filename (optional)"
+          >
+          <button type="button" class="btn btn-outline-danger remove-image">×</button>
+        `;
+        imageFields.appendChild(newField);
+        imageCount++;
+        
+        if (imageCount >= 5) {
+          this.disabled = true;
+          this.textContent = 'Maximum 5 images reached';
+        }
+      }
+    });
+
+    // Remove image field
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-image')) {
+        e.target.parentElement.remove();
+        imageCount--;
+        addImageBtn.disabled = false;
+        addImageBtn.innerHTML = '<i class="bi bi-plus-circle"></i> Add Another Image';
+        
+        // Reindex remaining images
+        const imageInputs = imageFields.querySelectorAll('.input-group');
+        imageInputs.forEach((group, index) => {
+          const urlInput = group.querySelector('input[type="url"]');
+          const filenameInput = group.querySelector('input[type="text"]');
+          const span = group.querySelector('.input-group-text');
+          
+          if (urlInput) {
+            urlInput.name = `listing[images][${index}][url]`;
+          }
+          if (filenameInput) {
+            filenameInput.name = `listing[images][${index}][filename]`;
+          }
+          if (span) {
+            span.textContent = `Image ${index + 1}`;
+          }
+        });
+      }
+    });
+
+    // Availability Management
+    let availabilityCount = JSON.parse('<%- JSON.stringify(listing.availability ? listing.availability.length : 1) %>');
+    const addAvailabilityBtn = document.getElementById('addAvailability');
+    const availabilityFields = document.getElementById('availabilityFields');
+
+    addAvailabilityBtn.addEventListener('click', function() {
+      const newField = document.createElement('div');
+      newField.className = 'row mb-2 availability-range';
+      newField.innerHTML = `
+        <div class="col-md-5">
+          <label class="form-label">From:</label>
+          <input 
+            type="date" 
+            name="listing[availability][${availabilityCount}][from]" 
+            class="form-control" 
+            required
+          >
+        </div>
+        <div class="col-md-5">
+          <label class="form-label">To:</label>
+          <input 
+            type="date" 
+            name="listing[availability][${availabilityCount}][to]" 
+            class="form-control" 
+            required
+          >
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="button" class="btn btn-outline-danger btn-sm remove-availability">
+            <i class="bi bi-trash">×</i>
+          </button>
+        </div>
+      `;
+      availabilityFields.appendChild(newField);
+      availabilityCount++;
+    });
+
+    // Remove availability field
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-availability') || 
+          e.target.parentElement.classList.contains('remove-availability')) {
+        const button = e.target.classList.contains('remove-availability') ? e.target : e.target.parentElement;
+        button.closest('.availability-range').remove();
+        availabilityCount--;
+      }
+    });
+
+    // Set minimum dates for availability fields
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('input[type="date"][name*="availability"]').forEach(input => {
+      if (input.name.includes('from')) {
+        input.min = today;
+      }
+    });
+  });
+</script>
+
+<style>
+  .card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+  }
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+  .form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+</style>

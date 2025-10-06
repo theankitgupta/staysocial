@@ -1,30 +1,287 @@
 <% layout('./layouts/boilerplate') %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1>All Listings</h1>
-  <a href="/listings/new" class="btn btn-success">
-    Add New Listing
-  </a>
+  <h1 class="h3 mb-0">
+    <i class="bi bi-list-ul text-primary"></i> All Listings
+  </h1>
+  <span class="badge bg-primary fs-6">
+    <%= listings.length %> <%= listings.length === 1 ? 'Listing' : 'Listings' %>
+  </span>
 </div>
 
-<div class="row">
+<!-- Search and Filter Section -->
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Search listings..." id="searchInput">
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" id="typeFilter">
+          <option value="">All Types</option>
+          <option value="Entire Place">Entire Place</option>
+          <option value="Private Room">Private Room</option>
+          <option value="Hotel Room">Hotel Room</option>
+          <option value="Shared Room">Shared Room</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" id="statusFilter">
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-outline-secondary w-100" id="resetFilters">
+          <i class="bi bi-arrow-clockwise"></i> Reset
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Listings Grid -->
+<div class="row" id="listingsContainer">
   <% if (listings.length === 0) { %>
     <div class="col-12">
-      <p class="text-muted">No listings found.</p>
+      <div class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h3 class="text-muted mt-3">No listings found</h3>
+        <p class="text-muted">Be the first to create a listing!</p>
+        <a href="/listings/new" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Create First Listing
+        </a>
+      </div>
     </div>
   <% } %>
 
   <% for (let listing of listings) { %>
-    <div class="col-md-4 mb-3">
-      <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark">
-        <div class="card h-100 shadow-sm hover-shadow">
-          <div class="card-body">
-            <h5 class="card-title"><%= listing.title %></h5>
-            <p class="card-text"><%= listing.description %></p>
-            <p class="card-text fw-bold">₹<%= listing.price.toLocaleString() %></p>
+    <div class="col-lg-4 col-md-6 mb-4 listing-card" 
+         data-type="<%= listing.type %>" 
+         data-status="<%= listing.status %>"
+         data-title="<%= listing.title.toLowerCase() %>"
+         data-city="<%= listing.location.city.toLowerCase() %>">
+      <div class="card h-100 shadow-sm hover-shadow transition-all position-relative">
+        
+        <!-- Image Section -->
+        <div class="position-relative">
+          <% if (listing.images && listing.images.length > 0) { %>
+            <img 
+              src="<%= listing.images[0].url %>" 
+              class="card-img-top" 
+              alt="<%= listing.title %>" 
+              style="height: 220px; object-fit: cover;"
+              onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjIyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='"
+            />
+          <% } else { %>
+            <div class="bg-light text-muted text-center d-flex align-items-center justify-content-center" style="height: 220px;">
+              <div>
+                <i class="bi bi-image display-4"></i>
+                <p class="mt-2 mb-0">No Image Available</p>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Status Badge -->
+          <span class="badge position-absolute top-0 end-0 m-2 
+            <%= listing.status === 'active' ? 'bg-success' 
+              : listing.status === 'pending' ? 'bg-warning text-dark' 
+              : listing.status === 'inactive' ? 'bg-secondary' 
+              : 'bg-danger' %>">
+            <i class="bi 
+              <%= listing.status === 'active' ? 'bi-check-circle' 
+                : listing.status === 'pending' ? 'bi-clock' 
+                : listing.status === 'inactive' ? 'bi-pause-circle' 
+                : 'bi-x-circle' %>"></i>
+            <%= listing.status.charAt(0).toUpperCase() + listing.status.slice(1) %>
+          </span>
+
+          <!-- Type Badge -->
+          <span class="badge bg-primary position-absolute top-0 start-0 m-2">
+            <i class="bi 
+              <%= listing.type === 'Entire Place' ? 'bi-house' 
+                : listing.type === 'Private Room' ? 'bi-door-closed' 
+                : listing.type === 'Hotel Room' ? 'bi-building' 
+                : 'bi-people' %>"></i>
+            <%= listing.type %>
+          </span>
+        </div>
+
+        <div class="card-body d-flex flex-column">
+          <!-- Title and Description -->
+          <h5 class="card-title mb-2 text-truncate"><%= listing.title %></h5>
+          <p class="card-text text-muted small flex-grow-1" style="min-height: 40px;">
+            <%= listing.description.length > 100 ? listing.description.substring(0, 100) + '...' : listing.description %>
+          </p>
+
+          <!-- Price -->
+          <div class="mb-2">
+            <span class="h5 text-primary fw-bold">
+              <%= listing.price.currency === 'INR' ? '₹' : listing.price.currency === 'USD' ? '$' : '€' %><%= listing.price.base.toLocaleString() %>
+            </span>
+            <small class="text-muted">/ night</small>
+          </div>
+
+          <!-- Location -->
+          <div class="mb-2">
+            <i class="bi bi-geo-alt text-muted"></i>
+            <small class="text-muted">
+              <%= listing.location.city %>, <%= listing.location.country %>
+            </small>
+          </div>
+
+          <!-- Capacity Info -->
+          <div class="d-flex justify-content-between text-muted small mb-2">
+            <span>
+              <i class="bi bi-people"></i> <%= listing.maxGuests %> guests
+            </span>
+            <span>
+              <i class="bi bi-door-open"></i> <%= listing.bedrooms %> bed
+            </span>
+            <span>
+              <i class="bi bi-badge-ad"></i> <%= listing.beds %> beds
+            </span>
+          </div>
+
+          <!-- Availability -->
+          <% if (listing.availability && listing.availability.length > 0) { %>
+            <div class="mb-3">
+              <small class="text-success">
+                <i class="bi bi-calendar-check"></i> 
+                Available until <%= new Date(listing.availability[0].to).toLocaleDateString() %>
+              </small>
+            </div>
+          <% } %>
+
+          <!-- Amenities Preview -->
+          <% if (listing.amenities && listing.amenities.length > 0) { %>
+            <div class="mt-auto">
+              <div class="d-flex flex-wrap gap-1">
+                <% listing.amenities.slice(0, 3).forEach(amenity => { %>
+                  <span class="badge bg-light text-dark border small">
+                    <i class="bi 
+                      <%= amenity.includes('Wi-Fi') ? 'bi-wifi' 
+                        : amenity.includes('Kitchen') ? 'bi-egg-fried' 
+                        : amenity.includes('Parking') ? 'bi-p-square' 
+                        : amenity.includes('Pool') ? 'bi-water' 
+                        : 'bi-check' %>"></i>
+                    <%= amenity %>
+                  </span>
+                <% }) %>
+                <% if (listing.amenities.length > 3) { %>
+                  <span class="badge bg-light text-dark border small">
+                    +<%= listing.amenities.length - 3 %> more
+                  </span>
+                <% } %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Card Footer with Action Buttons -->
+        <div class="card-footer bg-transparent border-top-0 pt-0">
+          <div class="d-grid gap-2">
+            <a href="/listings/<%= listing._id %>" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-eye"></i> View Details
+            </a>
           </div>
         </div>
-      </a>
+      </div>
     </div>
   <% } %>
 </div>
+
+<!-- No Results Message (Hidden by Default) -->
+<div id="noResults" class="text-center py-5 d-none">
+  <i class="bi bi-search display-1 text-muted"></i>
+  <h3 class="text-muted mt-3">No listings match your search</h3>
+  <p class="text-muted">Try adjusting your filters or search terms</p>
+  <button class="btn btn-outline-primary" id="clearSearch">
+    <i class="bi bi-arrow-clockwise"></i> Clear Search
+  </button>
+</div>
+
+<script>
+  // Simple client-side filtering
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const typeFilter = document.getElementById('typeFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const resetFilters = document.getElementById('resetFilters');
+    const clearSearch = document.getElementById('clearSearch');
+    const listingsContainer = document.getElementById('listingsContainer');
+    const noResults = document.getElementById('noResults');
+    const listingCards = document.querySelectorAll('.listing-card');
+
+    function filterListings() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const typeValue = typeFilter.value;
+      const statusValue = statusFilter.value;
+      
+      let visibleCount = 0;
+
+      listingCards.forEach(card => {
+        const title = card.getAttribute('data-title');
+        const city = card.getAttribute('data-city');
+        const type = card.getAttribute('data-type');
+        const status = card.getAttribute('data-status');
+        
+        const matchesSearch = !searchTerm || 
+          title.includes(searchTerm) || 
+          city.includes(searchTerm);
+        const matchesType = !typeValue || type === typeValue;
+        const matchesStatus = !statusValue || status === statusValue;
+        
+        if (matchesSearch && matchesType && matchesStatus) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        listingsContainer.style.display = 'none';
+        noResults.classList.remove('d-none');
+      } else {
+        listingsContainer.style.display = 'flex';
+        noResults.classList.add('d-none');
+      }
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', filterListings);
+    typeFilter.addEventListener('change', filterListings);
+    statusFilter.addEventListener('change', filterListings);
+    
+    resetFilters.addEventListener('click', function() {
+      searchInput.value = '';
+      typeFilter.value = '';
+      statusFilter.value = '';
+      filterListings();
+    });
+
+    clearSearch.addEventListener('click', function() {
+      searchInput.value = '';
+      typeFilter.value = '';
+      statusFilter.value = '';
+      filterListings();
+    });
+  });
+</script>
+
+<style>
+  .hover-shadow {
+    transition: all 0.3s ease;
+  }
+  .hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+  }
+  .transition-all {
+    transition: all 0.3s ease;
+  }
+</style>

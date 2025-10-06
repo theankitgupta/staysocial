@@ -7,17 +7,117 @@
         <%= listing.title %>
       </h1>
       <p class="listing-price">
-        ₹<%= listing.price.toLocaleString() %>
+        <%= listing.price.currency === 'INR' ? '₹' : listing.price.currency === 'USD' ? '$' : '€' %><%= listing.price.base.toLocaleString() %> 
+        <small class="text-muted">per night</small>
       </p>
     </header>
 
-    <div class="listing-body">
-      <p class="listing-description">
-        <%= listing.description %>
-      </p>
+    <!-- Images Gallery -->
+    <% if (listing.images && listing.images.length > 0) { %>
+      <div class="listing-images mb-4">
+        <div class="row g-2">
+          <% listing.images.forEach((image, index) => { %>
+            <div class="col-md-4">
+              <img 
+                src="<%= image.url %>" 
+                alt="<%= listing.title %> - Image <%= index + 1 %>" 
+                class="img-fluid rounded"
+                style="height: 200px; width: 100%; object-fit: cover;"
+              >
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="row">
+      <!-- Main Content -->
+      <div class="col-md-8">
+        <div class="listing-body">
+          <h3>About this place</h3>
+          <p class="listing-description">
+            <%= listing.description %>
+          </p>
+
+          <!-- Amenities -->
+          <% if (listing.amenities && listing.amenities.length > 0) { %>
+            <div class="amenities-section mt-4">
+              <h4>Amenities</h4>
+              <div class="d-flex flex-wrap gap-2">
+                <% listing.amenities.forEach(amenity => { %>
+                  <span class="badge bg-primary"><%= amenity %></span>
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Listing Details</h5>
+            
+            <!-- Property Type -->
+            <div class="mb-3">
+              <strong>Property Type:</strong>
+              <span class="badge bg-secondary"><%= listing.type %></span>
+            </div>
+
+            <!-- Capacity -->
+            <div class="mb-3">
+              <strong>Capacity:</strong>
+              <ul class="list-unstyled">
+                <li>👥 <strong><%= listing.maxGuests %></strong> guests max</li>
+                <li>🛏️ <strong><%= listing.bedrooms %></strong> bedrooms</li>
+                <li>🛌 <strong><%= listing.beds %></strong> beds</li>
+                <li>🚿 <strong><%= listing.bathrooms %></strong> bathrooms</li>
+              </ul>
+            </div>
+
+            <!-- Location -->
+            <div class="mb-3">
+              <strong>Location:</strong>
+              <p class="mb-1">
+                <%= listing.location.street %>, <%= listing.location.city %>
+              </p>
+              <p class="mb-1">
+                <%= listing.location.state %>, <%= listing.location.country %>
+              </p>
+              <p class="mb-0 text-muted">
+                PIN: <%= listing.location.pincode %>
+              </p>
+            </div>
+
+            <!-- Status -->
+            <div class="mb-3">
+              <strong>Status:</strong>
+              <span class="badge 
+                <%= listing.status === 'active' ? 'bg-success' : 
+                    listing.status === 'inactive' ? 'bg-secondary' : 
+                    listing.status === 'pending' ? 'bg-warning' : 'bg-danger' %>">
+                <%= listing.status %>
+              </span>
+            </div>
+
+            <!-- Availability -->
+            <% if (listing.availability && listing.availability.length > 0) { %>
+              <div class="mb-3">
+                <strong>Available:</strong>
+                <% listing.availability.forEach(range => { %>
+                  <p class="mb-1">
+                    📅 <%= range.from.toLocaleDateString() %> - <%= range.to.toLocaleDateString() %>
+                  </p>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <footer class="listing-footer d-flex gap-2">
+    <footer class="listing-footer d-flex gap-2 mt-4">
       <a href="/listings" class="btn btn-secondary">
         ← Back to Listings
       </a>
